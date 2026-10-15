@@ -1,27 +1,30 @@
-#include <Arduino.h>
-#include <DHT.h>
-
-#define DHTPIN 2       // ขา DATA ต่อกับ D2
-#define DHTTYPE DHT11  // ใช้เซนเซอร์ DHT11
-
-DHT dht(DHTPIN, DHTTYPE);
-
-float temperature;
-float humidity;
-
-void setup() {
-  Serial.begin(115200);
-  dht.begin();
-
-  Serial.println("DHT11 Sensor Started");
-}
-
 void loop() {
   // อ่านอุณหภูมิและความชื้น
   float t = dht.readTemperature();
   float h = dht.readHumidity();
+
+  // ตรวจสอบข้อผิดพลาด
+  if (isnan(t) || isnan(h)) {
+    Serial.println("Read sensor failed!");
+    delay(2000);
+    return;
+  }
+
   // เก็บค่าล่าสุดไว้ในตัวแปร
-  String dhtData = String(t)+","+ String(h);
-  Serial.println(dhtData);
+  temperature = t;
+  humidity = h;
+
+  // แสดงอุณหภูมิ
+  Serial.print("Temperature: ");
+  Serial.print(temperature);
+  Serial.println(" C");
+
+  // แสดงความชื้น
+  Serial.print("Humidity: ");
+  Serial.print(humidity);
+  Serial.println(" %");
+
+  Serial.println("------------------");
+
   delay(2000);
 }
